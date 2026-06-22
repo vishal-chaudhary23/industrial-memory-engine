@@ -1,0 +1,14 @@
+langchain==0.3.25
+langchain_community
+python-dotenv
+langchain_groq
+langchain_core
+fastapi
+uvicorn
+langchain-huggingface
+pymupdf
+python-multipart
+chromadb
+sentence-transformers
+pinecone
+tiktoken
