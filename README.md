@@ -28,6 +28,6 @@ Next.js
 
 ## Architecture
 
-(Add architecture diagram later)
+
 
 ## Roadmap
