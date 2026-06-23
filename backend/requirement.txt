@@ -1,4 +1,4 @@
-langchain==0.3.25
+langchain
 langchain_community
 python-dotenv
 langchain_groq

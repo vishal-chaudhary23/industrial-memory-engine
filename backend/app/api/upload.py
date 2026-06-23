@@ -1,6 +1,8 @@
 from fastapi import APIRouter, UploadFile, File
 import os
 from app.ingestion.parser import extract_text
+from app.services.ingest_service import ingest_document
+
 
 router = APIRouter()
 
@@ -19,9 +21,9 @@ async def upload_pdf(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
-    text = extract_text(file_path)
+    chunks = ingest_document(file_path)
 
     return {
         "filename": file.filename,
-        "characters": len(text)
+        "chunks": chunks
     }
