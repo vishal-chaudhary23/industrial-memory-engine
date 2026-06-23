@@ -40,6 +40,8 @@ Instructions:
 - Explain relationships when they are relevant.
 - Mention equipment IDs, document IDs, standards, and incident names exactly as provided.
 - Keep answers concise but informative.
+- When listing standards, incidents, related equipment, or relationships, include ALL relevant items found in Graph Context.
+- Do not omit entities unless explicitly asked to summarize.
 - For incident-related questions, explain cause, affected equipment, and associated documents if available.
 
 Vector Context:
@@ -88,19 +90,10 @@ def ask_question(query: str):
 
         graph_context += "\n"
 
-    # # 4. Combine contexts
-    # context = f"""
-    #         Vector Context:
-    #         {vector_context}
-
-    #         Graph Context:
-    #         {graph_context}
-    #         """
-    # return response
-
-    # print("\n===== GRAPH CONTEXT =====")
-    # print(graph_context)
-    # print("=========================\n")
+   
+    print("\n===== GRAPH CONTEXT =====")
+    print(graph_context)
+    print("=========================\n")
 
     # # 5. Ask LLM
     # response = question_answer_chain.invoke({
@@ -116,6 +109,45 @@ def ask_question(query: str):
 
     response = llm.invoke(messages)
 
-    return response.content
+    sources = []
+
+    seen = set()
+
+    for doc in docs:
+
+        source = doc.metadata.get("source")
+
+        if source and source not in seen:
+
+            seen.add(source)
+
+            sources.append({
+                "document": source
+            })
+
+    scores = [
+        doc.metadata.get("score", 0)
+        for doc in docs
+    ]
+
+    vector_score = max(scores) if scores else 0
+
+    graph_relations = len(graph_context.split("\n"))
+
+    graph_bonus = min(
+        graph_relations * 0.1,
+        0.4
+    )
+
+    confidence = round(
+        min(vector_score + graph_bonus, 1.0) * 100,
+        1
+    )
+
+    return {
+    "answer": response.content,
+    "retrieval_confidence": confidence,
+    "sources": sources
+    }
 
 

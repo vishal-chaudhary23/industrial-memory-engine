@@ -1,16 +1,17 @@
 from app.graph.neo4j_store import graph
 
-def get_entity_relations(equipment_name):
+def get_entity_relations(entity_name):
 
     query = """
-    MATCH (e {name:$name})-[r]->(n)
+    MATCH (e)-[r]->(n)
+    WHERE toLower(e.name) CONTAINS toLower($name)
     RETURN type(r) as relation,
-           n.name as target
+        n.name as target
     """
 
     return graph.query(
         query,
-        {"name": equipment_name}
+        {"name": entity_name}
     )
 
 # print(
